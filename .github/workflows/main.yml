@@ -1,0 +1,30 @@
+name: Deploy Strapi to EC2
+
+on:
+  push:
+    branches:
+      - main  # Adjust to your main branch name
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install SSH key
+      run: echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+
+    - name: Add EC2 host to known_hosts
+      run: ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy Strapi to EC2
+      run: |
+        ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+          cd /path/to/strapi/project
+          git pull origin main  # Ensure latest code from main branch
+          npm install  # Install dependencies if needed
+          npm run build  # Build Strapi (if applicable)
+          pm2 restart ecosystem.config.js --env production  # Restart Strapi (adjust for your deployment method)
+        EOF
