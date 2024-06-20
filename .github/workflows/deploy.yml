@@ -24,7 +24,7 @@ jobs:
         ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
           cd /path/to/strapi/project
           git pull origin main  # Ensure latest code from main branch
-          npm install  # Install dependencies if needed
-          npm run build  # Build Strapi (if applicable)
+          npm install  
+          npm run build  
           pm2 restart ecosystem.config.js --env production  # Restart Strapi (adjust for your deployment method)
         EOF
