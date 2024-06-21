@@ -13,8 +13,12 @@ jobs:
           node-version: '18'
       - name: Install dependencies
         run: npm install
-      - name: Install PM2
-        run: npm install pm2 -D  # Install PM2 as a dev dependency
+      # Install PM2 globally (adjust based on your chosen method)
+      - name: Install PM2 Globally  # Option 1 (separate step)
+        run: npm install pm2 -g
+      # OR
+      # - name: Install PM2 Globally (with caution)  # Option 2 (using sudo)
+      #   run: sudo npm install pm2 -g
       - name: Build Strapi
         run: npm run build  # Replace with your build command (if needed)
       - name: Start Strapi with PM2
