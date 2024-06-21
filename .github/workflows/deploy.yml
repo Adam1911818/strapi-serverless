@@ -1,27 +1,44 @@
-name: Deploy Strapi
+name: CI/CD Pipeline for Strapi Deployment
+
 on:
-  push: {}
+  push:
+    branches: [ main ]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
       - name: Install dependencies
         run: npm install
-      # Install PM2 globally (adjust based on your chosen method)
-      - name: Install PM2 Globally  # Option 1 (separate step)
-        run: npm install pm2 -g
-      # OR
-      # - name: Install PM2 Globally (with caution)  # Option 2 (using sudo)
-      #   run: sudo npm install pm2 -g
-      - name: Build Strapi
-        run: npm run build  # Replace with your build command (if needed)
-      - name: Start Strapi with PM2
-        run: pm2 start npm -- name "Strapi" -- start
-      - name: Stop Strapi with PM2 (optional)  # This step will stop Strapi after starting it
-        run: pm2 stop Strapi
+
+      - name: Run build scripts (if any)
+        run: npm run build
+
+      - name: Run tests (if any)
+        run: npm test
+
+      - name: Deploy to EC2
+        run: |
+          # Install AWS CLI on the runner (if not already installed)
+          curl -sL https://awscli.amazonaws.com/v2/install-linux | bash
+
+          # Configure AWS CLI using access key and secret from secrets (assuming configured)
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region <your-aws-region>  # Replace with your AWS region (pre-configured)
+
+          # Get the public IP of the EC2 instance (replace with your method)
+          public_ip=$(aws ec2 describe-instances | jq -r '.Reservations[].Instances[].PublicIpAddress')
+
+          # Copy project files to EC2 server using SSH (replace path on EC2)
+          scp -i ~/.ssh/<your-key-pair>.pem -r ./ . ubuntu@${public_ip}:/home/ubuntu/my-project/strapi-serverless/ .
+
+          # Connect to EC2 server and run deployment commands via SSH
+          ssh -i ~/.ssh/<your-key-pair>.pem ubuntu@${public_ip} << 'EOF'
+            # Replace these commands with your specific deployment steps (assuming Node.js and npm are installed)
+            cd /var/www/strapi
+            npm install
+            npm run build  # Or your specific build command
+            npm start  # Or your process manager command (e.g., pm2 start)
+          EOF
