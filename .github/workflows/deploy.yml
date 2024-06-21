@@ -1,49 +1,27 @@
-name: CI/CD Pipeline for Strapi Deployment
+name: Deploy to EC2
 
 on:
-  push: {}  # Trigger on any push event (consider using branches for more control)
+  push:
+    branches:
+      - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Install Node.js
-        uses: actions/setup-node@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          node-version: '18'  # Replace with your desired Node.js version if needed
+          node-version: '16'
 
       - name: Install dependencies
-        run: npm install  # Install project dependencies
+        run: npm install
 
-      - name: Build Strapi (if applicable)
-        run: npm run build  # Run build script if you have a build step
-        # Optional: Only run this step if there are changes in relevant files
+      - name: Run build
+        run: npm run build
 
-      - name: Run Strapi Tests (if applicable)
-        run: npm test  # Run tests if you have a testing setup
-        # Optional: Only run this step if there are changes in test files
-
-      - name: Deploy to EC2 (or other deployment target)
-        # Replace with your deployment steps (AWS CLI, SSH, etc.)
-        # Ensure proper authentication and authorization for deployment
-        # Example using AWS CLI (replace with your specific commands):
-        # ... (commands to connect to EC2, copy files, and start Strapi)
-
-      - name: Persist Strapi Process (optional)
-        # Consider using a process manager like PM2 for production
-        # This step would typically be part of your deployment script
-        # run: pm2 start strapi  # Example using PM2
-
-      - name: Upload Build Artifacts (optional)
-        # Consider uploading build artifacts (production-ready build)
-        # for easy access and rollback if needed
-        uses: actions/upload-artifact@v3
-        with:
-          name: strapi-build  # Customize the artifact name
-          path: ./dist  # Replace with your build output directory (if applicable)
-
-      - name: Post-Deployment Actions (optional)
-        # Add any additional steps that need to happen after deployment
-        # This could include sending notifications, running health checks, etc.
-        # ...
+     
