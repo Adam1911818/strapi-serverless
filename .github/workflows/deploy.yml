@@ -35,7 +35,7 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-          ssh-known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          ssh-known-hosts: ${{ secrets.EC2_SSH }}
           remote-port: 22
           remote-user: ${{ secrets.EC2_USER }}
           ssh-authentication-timeout: 120s
