@@ -38,7 +38,7 @@ jobs:
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
-            cd /path/to/your/project
+            cd /home/ubuntu/strapi-serverless
             git pull origin main
             yarn install
             yarn run build
