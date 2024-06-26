@@ -29,7 +29,7 @@ jobs:
           EC2_SSH_KEY_ID: ${{ secrets.EC2_SSH }}
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
-            git clone https://github.com/Adam1911818/strapi-serverless.git
+            git pull origin main
             yarn install
             yarn run build
             pm2 stop all || true
