@@ -23,8 +23,17 @@ jobs:
 
       - name: Run build
         run: yarn run build
-        
-      - name: start 
-        run: yarn start
 
-     
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /path/to/your/project
+            yarn install
+            yarn run build
+            pm2 stop all || true
+            pm2 start yarn --name "your-app-name" -- start
+            pm2 save
