@@ -17,7 +17,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Install dependencies
         run: |
@@ -46,6 +46,6 @@ jobs:
             yarn install
             yarn run build
             pm2 stop all || true
-            pm2 start yarn --name "your-app-name" -- start
+            pm2 start yarn --name "mystrapi" -- start
             pm2 save
           
