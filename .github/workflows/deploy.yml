@@ -25,15 +25,18 @@ jobs:
         run: yarn run build
 
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v0.1.8
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
+        env:
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          echo "${EC2_SSH_KEY}" > ssh_key
+          chmod 600 ssh_key
+          ssh -o StrictHostKeyChecking=no -i ssh_key $EC2_USER@$EC2_HOST << 'EOF'
             cd /path/to/your/project
+            git pull origin main
             yarn install
             yarn run build
             pm2 stop all || true
-            pm2 start yarn --name "my" -- start
+            pm2 start yarn --name "your-app-name" -- start
             pm2 save
+          EOF
