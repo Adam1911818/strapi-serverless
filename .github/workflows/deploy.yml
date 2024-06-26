@@ -38,9 +38,6 @@ jobs:
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
-          echo "${EC2_SSH_KEY}" | tr -d '\r' > ssh_key
-          chmod 600 ssh_key
-          ssh -o StrictHostKeyChecking=no -i ssh_key $EC2_USER@$EC2_HOST << 'EOF'
             cd /path/to/your/project
             git pull origin main
             yarn install
@@ -48,4 +45,4 @@ jobs:
             pm2 stop all || true
             pm2 start yarn --name "your-app-name" -- start
             pm2 save
-          EOF
+          
