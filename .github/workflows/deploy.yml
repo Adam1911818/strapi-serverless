@@ -35,5 +35,5 @@ jobs:
             yarn install
             yarn run build
             pm2 stop all || true
-            pm2 start yarn --name "your-app-name" -- start
+            pm2 start yarn --name "my" -- start
             pm2 save
